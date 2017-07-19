@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="d3/d3.v4.min.js"></script>
+	<title>Scale - Scatterplot Tutorial</title>
+</head>
+<body>
+	<script type="text/javascript">
+		
+	var dataset = undefined;
+
+	d3.json("points.json", function(error, data) {
+		if (error == undefined || error == null) {
+			console.log('No error came while loading the file!');
+			dataset = data;
+			workOnDataset();
+		} else {
+			console.log(error);
+		}
+	});
+
+	var heightSvg = 700;
+	var widthSvg = 1000;
+
+	var svg = d3.select("body")
+			.append("svg")
+			.attr("width", widthSvg)
+			.attr("height", heightSvg);
+
+	
+
+	var fontSize = 12;
+
+
+	function workOnDataset( ) {
+		var circles = svg.selectAll('circle')
+			.data(dataset)
+			.enter()
+			.append('circle');
+
+		var texts = svg.selectAll('text')
+				.data(dataset)
+				.enter()
+				.append('text')
+
+		circles.attr('cx', function(d, i) {
+				console.log(i + ' ---- x: ' + d.x + '  ---- y: ' + d.y)
+				return d.x + 50
+			})
+			.attr('cy', function (d,i) {
+				return d.y
+			})
+			.attr('r', function (d,i) {
+				return d.weight * 15
+			})
+			.attr('fill', function(d) {
+				return "rgba(" + d.weight * 100 +", " + d.weight * 20 + ","+ d.weight * 30+", "+ d.weight +")";
+			})
+			.attr('stroke', function(d) {
+				return "rgba(" + d.weight * 200 +", " + d.weight * 20 + ","+ d.weight * 30+", 0.3)";
+			})
+			.attr('stroke-width', function(d) { 
+				return d.weight*10 / 2
+			});
+			
+
+		texts.text(function(d) {
+				return "(" +(d.x) + ", " + d.y + ")";
+			})
+			.attr('x', function(d) {
+				return d.x + 50;
+			})
+			.attr('y', function(d) {
+				return d.y + Math.sqrt(parseInt(d.y)) *1.5;
+			})
+			.attr('font-size', fontSize)
+			.attr('text-anchor', 'middle')
+	}
+
+	</script>
+</body>
+</html>
