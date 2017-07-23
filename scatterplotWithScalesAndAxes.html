@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="d3/d3.v4.min.js"></script>
+	<title>Graph With Axes</title>
+</head>
+<body>
+<script type="text/javascript">
+
+	/*------ Public variables that are needed to be shared bw the functions ------*/
+	
+	var svgHeight = 500;
+	var svgWidth = 800;
+	var paddingH = 50;
+	var paddingV = 50;
+	
+	var dataset = undefined;
+
+	var maxX, xScale, yScale, radiusScale, colorXScale, colorYScale;
+
+	/*----- Working with the D3 rendering -----*/
+
+	var svg = d3.select('body')
+			.append('svg')
+			.attr('width', svgWidth)
+			.attr('height', svgHeight);
+
+	d3.json('points.json', function ( error, data ) {
+		if(error == null || error == undefined) {
+			dataset = data;
+			renderTheGraph();
+		} else {
+			window.alert('Something wrong happened while loading the data from JSON file. Try again.');
+		}
+	});
+
+
+	function renderTheGraph() {
+
+		setScales();
+
+		var circles = svg.selectAll('circle')
+			.data(dataset)
+			.enter()
+			.append('circle');
+
+		circles.attr('cx', function ( d ) {
+				console.log("The x - " + xScale(d.x));
+				return  xScale(d.x);
+			})
+			.attr('cy', function ( d ) {
+				console.log("The y - " + d.y);
+				return yScale(d.y);
+			})
+			.attr('r', function ( d ) {
+				console.log("The radius - " + d.weight);
+				return radiusScale(d.weight);
+			})
+			.attr('fill', 'orange')
+			.attr('stroke', function (d) {
+				return 'rgba(' + (colorXScale(d.x) + colorYScale(d.y)) / 2+ "," + 0 + "," + 0 + ', '+ d.weight+')';
+			})
+			.attr('stroke-width' , function ( d ) {
+				console.log("The stroke-width - " + d.weight);
+				return  radiusScale(d.weight) /2 ;
+			});
+
+		svg.selectAll('text')
+			.data(dataset)
+			.enter()
+			.append('text')	
+			.text(function( d ) {
+				return "(" + d.x + "," + d.y + ")";
+			})
+			.attr('x', function ( d ) {
+				console.log("The x - " + xScale(d.x));
+				return  xScale(d.x);
+			})
+			.attr('y', function ( d ) {
+				console.log("The y - " + d.y);
+				return yScale(d.y + (d.weight * 50));
+			})
+			.attr('text-anchor', 'middle')
+			.attr('font-size', 11);
+
+		renderAxes();
+	}
+		
+	function setScales ( ) {
+		
+		xScale = d3.scaleLinear()
+				.domain( [ 0, 50 + d3.max( dataset, function( d ) { return d.x }) ] )
+				.range( [ paddingH, svgWidth - paddingH ] );
+
+		yScale = d3.scaleLinear()
+				.domain( [ 0, 50 + d3.max( dataset, function( d ) { return d.y }) ] )
+				.range( [ svgHeight - (paddingV * 2), paddingV ] );
+
+		radiusScale = d3.scaleLinear()
+					.domain( [0, d3.max( dataset, function ( d ) { return d.weight })] )
+					.range( [ 5, 15] );
+		
+		colorXScale = d3.scaleLinear()
+					.domain( [ 0, d3.max( dataset, function( d ) { return d.x }) ] )
+					.range( [ 100, 255 ] );
+
+		colorYScale = d3.scaleLinear()
+					.domain( [ 0, d3.max( dataset, function( d ) { return d.y }) ] )
+					.range( [ 100, 255 ] );
+
+	}
+
+	function renderAxes() {
+		svg.append('g')
+			.attr('transform', 'translate(' + 0 + ', '+ (svgHeight - paddingV * 2) + ')')
+			.call(d3.axisBottom(xScale)
+				.ticks(30));
+
+		svg.append("g")
+			.attr("transform", "translate(  "+ paddingV+', '+ 0 + ')')
+			.call(d3.axisLeft(yScale)
+				.ticks(30))
+
+	}
+
+</script>
+</body>
+</html>

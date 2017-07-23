@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="d3/d3.v4.min.js"></script>
+	<title>Scale - Scatterplot Tutorial</title>
+</head>
+<body>
+	<script type="text/javascript">
+		
+	var dataset = undefined;
+
+	d3.json("points.json", function(error, data) {
+		if (error == undefined || error == null) {
+			console.log('No error came while loading the file!');
+			dataset = data;
+			workOnDataset();
+		} else {
+			console.log(error);
+		}
+	});
+
+	var heightSvg = 300;
+	var widthSvg = 500;
+
+	var svg = d3.select("body")
+			.append("svg")
+			.attr("width", widthSvg)
+			.attr("height", heightSvg);
+
+	
+
+	var fontSize = 12;
+
+
+	function workOnDataset( ) {
+
+		var maxXDomain = d3.max(dataset, function(d) { return parseInt(d.x) });
+
+		var maxXRange = d3.max ( dataset , function (d) { return parseInt(widthSvg) });
+		var maxYDomain = d3.max(dataset, function(d) { return parseInt(d.y) })
+		var maxYRange = d3.max ( dataset , function (d) { return parseInt(heightSvg) })
+
+		console.log('Max x domain--- ' + maxXDomain)
+		console.log('maxXRange--- ' + maxXRange)
+
+		console.log('Max y domain--- ' + maxYDomain)
+		console.log('maxYRange--- ' + maxYRange)
+
+		var xScale = d3.scaleLinear()
+			.domain( [ 0, maxXDomain ] )
+			.range( [ 15, maxXRange - 10 ] );
+
+		console.log(".......................................................... " + xScale(500) )
+
+		var yScale = d3.scaleLinear()
+			.domain( [ 0, maxYDomain ] )
+			.range( [ 10, maxYRange - 40 ] );
+
+		var rScale = d3.scaleLinear()
+				.domain( [ 0, d3.max( dataset, function (d) { return d.weight }) ] )
+				.range ( [ 5, 10 ] )
+
+		console.log(".......................................................... " + yScale(500) )
+
+		var circles = svg.selectAll('circle')
+			.data(dataset)
+			.enter()
+			.append('circle');
+
+/*		var texts = svg.selectAll('text')
+				.data(dataset)
+				.enter()
+				.append('text')*/
+
+		circles.attr('cx', function(d, i) {
+				return xScale(d.x)
+			})
+			.attr('cy', function (d,i) {
+				return yScale(d.y)
+			})
+			.attr('r', function (d,i) {
+				return rScale(d.weight);	
+			})
+			.attr('fill', function(d) {
+				return "rgba(" + d.weight * 100 +", " + d.weight * 20 + ","+ d.weight * 30+", "+ d.weight +")";
+			})
+			.attr('stroke', function(d) {
+				return "rgba(" + d.weight * 200 +", " + d.weight * 20 + ","+ d.weight * 30+", 0.3)";
+			})
+			.attr('stroke-width', function(d) { 
+				return d.weight*10 ;
+			});
+			
+/*
+		texts.text(function(d) {
+				return "(" +(d.x) + ", " + d.y + ")";
+			})
+			.attr('x', function(d) {
+				return xScale(d.x) ;
+			})
+			.attr('y', function(d) {
+				return yScale(d.y);
+			})
+			.attr('font-size', fontSize)
+			.attr('text-anchor', 'middle')*/
+	}
+
+	</script>
+</body>
+</html>

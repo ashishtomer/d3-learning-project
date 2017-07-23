@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>D3 Learning Project</title>
+	<script type="text/javascript" src="d3/d3.v4.min.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+	var  heightSvg = 500;
+	var widthSvg = 1000;
+	var dataset = undefined;
+
+	var svg  = d3.select("body").append("svg")
+					.attr("width", widthSvg)
+					.attr("height", heightSvg);
+
+	d3.csv('foods.csv', function( error, data ) {
+		if (error == undefined || error == null) {
+			console.log('No error came while loading the file!');
+			console.log(data);
+			dataset = data;
+			workOnDataset();
+		}
+	});
+
+	function workOnDataset() {
+
+		var circles = svg.selectAll("circle")
+			.data(dataset)
+			.enter()
+			.append("circle")
+				
+		circles.attr("cx", function(d, i) {
+				console.log( d.Deliciousness)
+				return (i*50 + 50);
+			})
+			.attr("cy", 250)
+			.attr("r",  function(d, i) {
+				return ( 3 * d.Deliciousness);
+			})
+			.attr("fill", "yellow")
+			.attr("stroke", "orange")
+			.attr("stroke-width", function(d, i) {
+				return ( d.Deliciousness / 2);
+			});
+
+		var fontSize = 15;
+
+		svg.selectAll("text")
+			.data(dataset)
+			.enter()
+			.append("text")
+			.text(function(d, i) {
+				return ( d.Deliciousness / 2);
+			})
+			.attr("x", function(d, i) {
+				return (i*50 + 50) ;
+			})
+			.attr("y", heightSvg /2 + fontSize/3)
+			.attr("font-size", fontSize +"px")
+			.attr("fill", "crimson")
+			.attr("font-weight", "bold")
+			.attr("text-anchor", "middle")
+
+
+		svg.selectAll("text")
+			.data(dataset)
+			.enter()
+			.append("text")
+			.text(function(d, i) {
+				console.log("Food --> " + d.Food)
+				return ( d.Food);
+			})
+			.attr("x", function(d, i) {
+				return i*50 + 50 ;
+			})
+			.attr("y", heightSvg /2 )
+			.attr("font-size", fontSize +"px")
+	}
+
+
+	</script>
+
+</body>
+</html>
