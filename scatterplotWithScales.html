@@ -37,7 +37,6 @@
 	function workOnDataset( ) {
 
 		var maxXDomain = d3.max(dataset, function(d) { return parseInt(d.x) });
-
 		var maxXRange = d3.max ( dataset , function (d) { return parseInt(widthSvg) });
 		var maxYDomain = d3.max(dataset, function(d) { return parseInt(d.y) })
 		var maxYRange = d3.max ( dataset , function (d) { return parseInt(heightSvg) })
