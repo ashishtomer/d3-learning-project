@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="d3/d3.v4.min.js"></script>
+	<title>Chart With Update</title>
+
+	<style type="text/css">
+		
+/*		rect:hover {
+			fill: yellow;
+			transition: all 0.5s;
+		}*/
+
+	</style>
+
+</head>
+<body>
+
+	<script>
+		var dataset = undefined;
+		var svgHeight = 300;
+		var svgWidth = 700;
+		var paddingX = 30;
+		var paddingY = 30;
+		var minX = 0;
+		var maxX = 0;
+		var minY = 0;
+		var maxY = 0;
+
+		console.log('variables declared .............');
+
+		var xScale = undefined;
+		var yScale = undefined;
+		var bandSizeScale = undefined;
+		var colorScale = undefined;
+
+		var svg = d3.select('body')
+				.append('svg')
+				.attr('width', svgWidth)
+				.attr('height', svgHeight);
+
+		d3.json('word-frequency.json', function( error, data ) {
+			console.log('loading data.........');
+			if(error == undefined || error == null) {
+				dataset = data;
+				console.log(dataset);
+				renderChart();
+			} else {
+				window.alert('The data couldn\'t be loaded from the file');
+			}
+		});
+
+		function setScales() {
+
+			minX = d3.min( dataset, function (d) {
+
+			});
+
+			console.log('d3.range() --->');
+			console.log(d3.range(dataset.length));
+
+			xScale = d3.scaleOrdinal()
+					.domain(d3.range(dataset.length))
+					.range(d3.range(dataset.length));
+
+			console.log('xScale(5) ---> ' + xScale(24));
+
+			yScale = d3.scaleLinear()
+					.domain([0, d3.max( dataset, function (d) { return d.Freq })])
+					.range([ 0, svgHeight - paddingY ]);
+
+			var bandSizeScale = d3.scaleBand()
+				.domain(d3.range(dataset.length))
+				.rangeRound([0,svgWidth], true);
+
+			colorScale = d3.scaleLinear()
+					.domain([0, d3.max( dataset, function (d) { return d.Freq })])
+					.range( [10, 255] )
+		}
+
+		function setBandPosition(i) {
+			return d3.scaleBand()
+				.domain(d3.range(dataset.length))
+				.rangeRound([0,svgWidth], true)
+				.paddingOuter(0.5)
+				.paddingInner(0.1)(i);
+		}
+
+		function setBandWidth(datasize) {
+			return svgWidth / datasize - 3;
+		}
+
+		function setBandHeight(itemValue) {
+			return  (svgHeight - yScale(itemValue) - paddingY)
+		}
+
+		function showChart () {
+
+			var widthOfBand = setBandWidth(dataset.length);
+
+			svg.selectAll('rect')
+				.data(dataset)
+				.enter()
+				.append('rect')
+					.on('mouseover', function() {
+						d3.select(this)
+							.attr('fill', ' orange')
+					})
+					.on('mouseout', function(d) {
+						d3.select(this)
+							.attr('fill', 'rgb('+ colorScale(d.Freq) +', 0, '+ colorScale(d.Freq)+ ')')
+					})
+					.attr('x', function (d, i) { 
+						return setBandPosition(i);
+					})
+					.attr('y', function (d, i) { 
+						return setBandHeight(d.Freq);
+					})
+					.attr('width',  widthOfBand)
+					.attr('height', 0)
+					.attr('fill', function(d){
+						return 'rgb('+ colorScale(d.Freq) +', 0, '+ colorScale(d.Freq)+ ')';
+					})
+		}
+
+		function renderChart() {
+			setScales();
+			showChart();
+		}
+
+		function updateDataset(dataset) {
+
+			var max = 60;
+			var min = 1;
+			for( var letter in dataset ) {
+				dataset[letter].Freq = Math.floor(Math.random() * (max - min) + min);
+			}
+		}
+
+		setTimeout( function(){updateDataset(dataset); updateChart(d3.easeBounce);}, 1); 		//Instant transition in chart
+		setInterval( function(){updateDataset(dataset); updateChart(d3.easeCubic);}, 5000 );	//Update the chart after every 3 seconds
+
+		function updateChart(ease) {
+
+				setScales();
+
+				svg.selectAll('rect')
+					.data(dataset)
+					.transition()
+					.duration(1000)
+					.ease(ease) //easeElastic  easeBounce  easeCubic easeCircle
+					.attr('y', function (d, i) { 
+						return setBandHeight(d.Freq);
+					})
+					.attr('height', function (d, i) { return yScale(d.Freq) })
+					.attr('fill', function(d){
+						return 'rgb('+ colorScale(d.Freq) +', 0, '+ colorScale(d.Freq)+ ')';
+					});
+
+			}
+
+	</script>
+
+</body>
+</html>

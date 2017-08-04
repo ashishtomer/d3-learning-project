@@ -68,10 +68,10 @@
 			.enter()
 			.append('circle');
 
-/*		var texts = svg.selectAll('text')
+		var texts = svg.selectAll('text')
 				.data(dataset)
 				.enter()
-				.append('text')*/
+				.append('text')
 
 		circles.attr('cx', function(d, i) {
 				return xScale(d.x)
@@ -92,7 +92,7 @@
 				return d.weight*10 ;
 			});
 			
-/*
+
 		texts.text(function(d) {
 				return "(" +(d.x) + ", " + d.y + ")";
 			})
@@ -103,7 +103,7 @@
 				return yScale(d.y);
 			})
 			.attr('font-size', fontSize)
-			.attr('text-anchor', 'middle')*/
+			.attr('text-anchor', 'middle')
 	}
 
 	</script>

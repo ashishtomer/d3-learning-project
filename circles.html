@@ -24,6 +24,8 @@
 			console.log(data);
 			dataset = data;
 			workOnDataset();
+		} else {
+			window.alert('No data found.')
 		}
 	});
 
@@ -55,7 +57,7 @@
 			.enter()
 			.append("text")
 			.text(function(d, i) {
-				return ( d.Deliciousness / 2);
+				return ( d.Deliciousness );
 			})
 			.attr("x", function(d, i) {
 				return (i*50 + 50) ;

@@ -116,12 +116,12 @@
 		svg.append('g')
 			.attr('transform', 'translate(' + 0 + ', '+ (svgHeight - paddingV * 2) + ')')
 			.call(d3.axisBottom(xScale)
-				.ticks(30));
+				.ticks(20));
 
 		svg.append("g")
 			.attr("transform", "translate(  "+ paddingV+', '+ 0 + ')')
 			.call(d3.axisLeft(yScale)
-				.ticks(30))
+				.ticks(20))
 
 	}
 
